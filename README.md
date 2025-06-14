@@ -1,1 +1,1 @@
-# hide-and-geek
+# Hide and geek
