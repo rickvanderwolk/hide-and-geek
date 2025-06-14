@@ -16,7 +16,7 @@ function loadGlobalScores() {
     try {
         return JSON.parse(raw);
     } catch (e) {
-        console.error("❌ Fout bij laden global_scores.json, bestand is mogelijk corrupt.");
+        console.error("❌ Error loading global_scores.json. The file may be corrupted.");
         return {};
     }
 }
@@ -26,7 +26,7 @@ function saveGlobalScores(globalScores) {
 }
 
 if (!fs.existsSync(logFilePath)) {
-    fs.writeFileSync(logFilePath, `timestamp,toernooi,hider,seeker,result_hider,result_seeker,obstacles\n`);
+    fs.writeFileSync(logFilePath, `timestamp,tournament,hider,seeker,result_hider,result_seeker,obstacles\n`);
 }
 
 const playerFiles = fs.readdirSync(playersDir).filter(f => f.endsWith(".js"));
@@ -104,7 +104,7 @@ function drawGrid(hider, seeker, obstacles, tick, phase, matchInfo, globalScores
     }
 
     console.log("\n🏆 Scoreboard:");
-    console.log("Speler         | Wins als Zoeker | Overleefd als Hider  | Gespeeld");
+    console.log("Player         | Seeker Wins     | Hider Survived       | Games Played");
     const sorted = Object.entries(seekerWins).sort((a, b) =>
         (b[1] + hiderSurvived[b[0]]) - (a[1] + hiderSurvived[a[0]])
     );
@@ -112,8 +112,8 @@ function drawGrid(hider, seeker, obstacles, tick, phase, matchInfo, globalScores
         console.log(`${name.padEnd(15)}| ${seekerWins[name].toString().padStart(15)} | ${hiderSurvived[name].toString().padStart(20)} | ${gamesPlayed[name]}`);
     }
 
-    console.log("\n🌍 Totale statistieken over alle toernooien:");
-    console.log("Speler         | Wins als Zoeker | Overleefd als Hider  | Gespeeld");
+    console.log("\n🌍 Global Statistics (All Tournaments):");
+    console.log("Player         | Seeker Wins     | Hider Survived       | Games Played");
     const sortedGlobal = Object.entries(globalScores).sort((a, b) =>
         (b[1].seekerWins + b[1].hiderSurvived) - (a[1].seekerWins + a[1].hiderSurvived)
     );
@@ -126,7 +126,7 @@ async function runMatch(hiderFile, seekerFile, matchLabel, obstacles, globalScor
     const hiderModule = require(path.join(playersDir, hiderFile));
     const seekerModule = require(path.join(playersDir, seekerFile));
 
-    if (!hiderModule.hider || !seekerModule.seeker) return "FOUT";
+    if (!hiderModule.hider || !seekerModule.seeker) return "ERROR";
 
     const hiderLogic = hiderModule.hider;
     const seekerLogic = seekerModule.seeker;
@@ -158,7 +158,7 @@ async function runMatch(hiderFile, seekerFile, matchLabel, obstacles, globalScor
                 moveFn
             );
         } catch {
-            return "FOUT";
+            return "ERROR";
         }
 
         drawGrid(hider, seeker, obstacles, tick, hidingPhase ? "HIDING" : "SEEKING", matchLabel, globalScores);
@@ -175,7 +175,7 @@ async function runMatch(hiderFile, seekerFile, matchLabel, obstacles, globalScor
 }
 
 async function runTournament() {
-    const tournamentId = `toernooi-${Date.now()}`;
+    const tournamentId = `tournament-${Date.now()}`;
     const obstacles = createObstacles();
     let globalScores = loadGlobalScores();
     let matchCount = 0;
