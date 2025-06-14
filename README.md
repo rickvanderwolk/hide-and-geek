@@ -1,6 +1,6 @@
 # Hide and geek
 
-![Hide-and-geek](preview.png)
+<img src="preview.png" alt="preview" width="400">
 
 A terminal-based hide and seek game. 
 
