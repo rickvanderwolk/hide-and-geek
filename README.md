@@ -1,5 +1,7 @@
 # Hide and geek
 
+![Hide-and-geek](preview.png)
+
 A terminal-based hide and seek game. 
 
 ## How it works
